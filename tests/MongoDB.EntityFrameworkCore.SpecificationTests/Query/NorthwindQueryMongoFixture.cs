@@ -34,7 +34,12 @@ public class NorthwindQueryMongoFixture<TModelCustomizer> : NorthwindQueryFixtur
 #endif
     new()
 {
-    protected override string StoreName { get; } = TestDatabaseNamer.GetUniqueDatabaseName("Northwind");
+    // Static (so per model customizer) rather than per fixture instance: like the relational providers, the Northwind
+    // store is shared by every fixture in the process and seeded once. Query tests never modify it.
+    private static readonly string UniqueStoreName = TestDatabaseNamer.GetUniqueDatabaseName("Northwind");
+
+    protected override string StoreName
+        => UniqueStoreName;
 
     private ITestStoreFactory? _testStoreFactory;
 
@@ -43,7 +48,7 @@ public class NorthwindQueryMongoFixture<TModelCustomizer> : NorthwindQueryFixtur
 
     public TestServer TestServer { get; private set; }
 
-    public override async Task InitializeAsync()
+    public override async LifetimeTask InitializeAsync()
     {
         TestServer = await TestServer.GetOrInitializeTestServerAsync(MongoCondition.None);
         _testStoreFactory = new MongoTestStoreFactory(TestServer);

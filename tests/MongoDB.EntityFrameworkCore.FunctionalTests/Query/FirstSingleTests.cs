@@ -75,7 +75,7 @@ public class FirstSingleTests(ReadOnlySampleGuidesFixture database)
     public async Task FirstAsync_with_no_result()
     {
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _db.Planets.Skip(100).FirstAsync());
-        Assert.Equal("Sequence contains no elements", ex.Message);
+        Assert.Equal("Sequence contains no elements.", ex.Message);
     }
 
     [Fact]
@@ -91,6 +91,58 @@ public class FirstSingleTests(ReadOnlySampleGuidesFixture database)
         var result = await _db.Planets.Skip(100).FirstOrDefaultAsync();
         Assert.Null(result);
     }
+
+#if EF11
+    [Fact]
+    public void MinBy_after_DefaultIfEmpty_on_non_empty_source_returns_the_minimum()
+    {
+        var result = _db.Planets.Select(p => p.orderFromSun).DefaultIfEmpty().MinBy(o => o);
+        Assert.Equal(_db.Planets.Min(p => p.orderFromSun), result);
+    }
+
+    [Fact]
+    public void MaxBy_after_DefaultIfEmpty_on_non_empty_source_returns_the_maximum()
+    {
+        var result = _db.Planets.Select(p => p.orderFromSun).DefaultIfEmpty().MaxBy(o => o);
+        Assert.Equal(_db.Planets.Max(p => p.orderFromSun), result);
+    }
+
+    [Fact]
+    public void MinBy_after_DefaultIfEmpty_on_empty_value_type_source_returns_default()
+    {
+        var result = _db.Planets.Where(p => p.orderFromSun > 1000).Select(p => p.orderFromSun).DefaultIfEmpty().MinBy(o => o);
+        Assert.Equal(0, result);
+    }
+
+    [Fact]
+    public void MaxBy_after_DefaultIfEmpty_on_empty_value_type_source_returns_default()
+    {
+        var result = _db.Planets.Where(p => p.orderFromSun > 1000).Select(p => p.orderFromSun).DefaultIfEmpty().MaxBy(o => o);
+        Assert.Equal(0, result);
+    }
+
+    [Fact]
+    public void MinBy_after_DefaultIfEmpty_on_empty_entity_source_returns_null()
+    {
+        var result = _db.Planets.Where(p => p.orderFromSun > 1000).DefaultIfEmpty().MinBy(p => p.name);
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public void MinBy_after_DefaultIfEmpty_on_non_empty_entity_source_returns_the_entity()
+    {
+        var result = _db.Planets.DefaultIfEmpty().MinBy(p => p.name);
+        Assert.NotNull(result);
+        Assert.Equal(_db.Planets.OrderBy(p => p.name).First().name, result.name);
+    }
+
+    [Fact]
+    public void First_after_DefaultIfEmpty_and_ordering_on_empty_source_returns_default()
+    {
+        var result = _db.Planets.Where(p => p.orderFromSun > 1000).DefaultIfEmpty().OrderBy(p => p.name).ThenBy(p => p.orderFromSun).First();
+        Assert.Null(result);
+    }
+#endif
 
     [Fact]
     public void First_predicate()
@@ -133,7 +185,7 @@ public class FirstSingleTests(ReadOnlySampleGuidesFixture database)
     public async Task FirstAsync_predicate_no_results()
     {
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _db.Planets.FirstAsync(p => p.orderFromSun == 10));
-        Assert.Equal("Sequence contains no elements", ex.Message);
+        Assert.Equal("Sequence contains no elements.", ex.Message);
     }
 
     [Fact]
@@ -191,7 +243,7 @@ public class FirstSingleTests(ReadOnlySampleGuidesFixture database)
     public async Task SingleAsync_with_no_results()
     {
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _db.Planets.Skip(100).SingleAsync());
-        Assert.Equal("Sequence contains no elements", ex.Message);
+        Assert.Equal("Sequence contains no elements.", ex.Message);
     }
 
     [Fact]
@@ -219,7 +271,7 @@ public class FirstSingleTests(ReadOnlySampleGuidesFixture database)
     public async Task SingleAsync_with_more_than_one_result()
     {
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _db.Planets.Skip(4).SingleAsync());
-        Assert.Equal("Sequence contains more than one element", ex.Message);
+        Assert.Equal("Sequence contains more than one element.", ex.Message);
     }
 
     [Fact]
@@ -233,7 +285,7 @@ public class FirstSingleTests(ReadOnlySampleGuidesFixture database)
     public async Task SingleOrDefaultAsync_with_more_than_one_result()
     {
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _db.Planets.Skip(4).SingleOrDefaultAsync());
-        Assert.Equal("Sequence contains more than one element", ex.Message);
+        Assert.Equal("Sequence contains more than one element.", ex.Message);
     }
 
     [Fact]
@@ -277,7 +329,7 @@ public class FirstSingleTests(ReadOnlySampleGuidesFixture database)
     public async Task SingleAsync_predicate_no_results()
     {
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _db.Planets.SingleAsync(p => p.orderFromSun == 10));
-        Assert.Equal("Sequence contains no elements", ex.Message);
+        Assert.Equal("Sequence contains no elements.", ex.Message);
     }
 
     [Fact]
@@ -305,7 +357,7 @@ public class FirstSingleTests(ReadOnlySampleGuidesFixture database)
     public async Task SingleAsync_predicate_with_more_than_one_result()
     {
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _db.Planets.SingleAsync(p => p.orderFromSun > 5));
-        Assert.Equal("Sequence contains more than one element", ex.Message);
+        Assert.Equal("Sequence contains more than one element.", ex.Message);
     }
 
     [Fact]
@@ -319,7 +371,7 @@ public class FirstSingleTests(ReadOnlySampleGuidesFixture database)
     public async Task SingleOrDefaultAsync_predicate_with_more_than_one_result()
     {
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _db.Planets.SingleOrDefaultAsync(p => p.orderFromSun > 5));
-        Assert.Equal("Sequence contains more than one element", ex.Message);
+        Assert.Equal("Sequence contains more than one element.", ex.Message);
     }
 
     public void Dispose()

@@ -13,7 +13,7 @@ stepback: true
 command_type: system
 
 # Protect ourself against rogue test case, or curl gone wild, that runs forever
-exec_timeout_secs: 1200
+exec_timeout_secs: 3600
 
 # What to do when evergreen hits the timeout (`post:` tasks are run automatically)
 timeout:
@@ -198,6 +198,22 @@ functions:
           ATLAS_URI="${ATLAS_URI}" \
           MONGODB_VERSION="${VERSION}" \
           CRYPT_SHARED_LIB_PATH=${CRYPT_SHARED_LIB_PATH} \
+          BUILD_CONFIGURATION="Debug EF10" \
+            ./evergreen/run-tests.sh
+    # The native translator without the driver-LINQ fallback must also be failure-free.
+    - command: shell.exec
+      type: test
+      params:
+        working_dir: mongo-efcore-provider
+        script: |
+          ${PREPARE_SHELL}
+          DRIVER_VERSION=${DRIVER_VERSION} \
+          OS=${OS} \
+          MONGODB_URI="${MONGODB_URI}" \
+          ATLAS_URI="${ATLAS_URI}" \
+          MONGODB_VERSION="${VERSION}" \
+          CRYPT_SHARED_LIB_PATH=${CRYPT_SHARED_LIB_PATH} \
+          MONGODB_EF_QUERY_MODE=NativeOnly \
           BUILD_CONFIGURATION="Debug EF10" \
             ./evergreen/run-tests.sh
 

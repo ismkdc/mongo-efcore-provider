@@ -74,3 +74,12 @@ review*.md
 
 # BenchmarkDotNet output (written to the process CWD — repo root when run via `dotnet run --project`)
 BenchmarkDotNet.Artifacts/
+
+# Subagent-driven-development scratch workspace
+.superpowers/
+
+.worktrees/
+
+# local planning artifacts (never published)
+docs/superpowers/
+.superpowers/
