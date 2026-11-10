@@ -1,81 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <Configurations>Debug EF8;Release EF8;Debug EF9;Release EF9;Debug EF10;Release EF10;Debug EF11;Release EF11</Configurations>
+    <TargetFramework>net11.0</TargetFramework>
     <Platforms>AnyCPU</Platforms>
+    <DefineConstants>$(DefineConstants);EF11</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug EF8' ">
-    <DefineConstants>TRACE;DEBUG;EF8</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release EF8' ">
-    <DefineConstants>TRACE;RELEASE;EF8</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug EF9' ">
-    <DefineConstants>TRACE;DEBUG;EF9</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release EF9' ">
-    <DefineConstants>TRACE;RELEASE;EF9</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug EF10' ">
-    <DefineConstants>TRACE;DEBUG;EF10</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release EF10' ">
-    <DefineConstants>TRACE;RELEASE;EF10</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug EF11' ">
-    <TargetFramework>net11.0</TargetFramework>
-    <DefineConstants>TRACE;DEBUG;EF11</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release EF11' ">
-    <TargetFramework>net11.0</TargetFramework>
-    <DefineConstants>TRACE;RELEASE;EF11</DefineConstants>
-  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\MongoDB.EntityFrameworkCore\MongoDB.EntityFrameworkCore.csproj" />
   </ItemGroup>
 
   <Import Project="..\..\Versions.props" />
 
-  <!-- EF8-EF10 specification tests are written against xUnit v2; EF11 moves them to xUnit v3. -->
-  <ItemGroup Condition=" '$(Configuration)' != 'Release EF11' And '$(Configuration)' != 'Debug EF11' ">
-    <PackageReference Include="xunit" Version="2.9.3" />
-  </ItemGroup>
-
-  <!-- EF11's Specification.Tests package depends on xunit.v3.assert/extensibility.core 4.0.0-pre.108, so use the 4.x line here
-       (the 3.x xunit.v3 core would otherwise run against newer assert/common assemblies). -->
-  <ItemGroup Condition=" '$(Configuration)' == 'Release EF11' Or '$(Configuration)' == 'Debug EF11' ">
-    <PackageReference Include="xunit.v3" Version="4.0.2" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(Configuration)' == 'Release EF8' Or '$(Configuration)' == 'Debug EF8' ">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="$(EF8Version)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="$(EF8Version)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Specification.Tests" Version="$(EF8Version)" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(Configuration)' == 'Release EF9' Or '$(Configuration)' == 'Debug EF9' ">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="$(EF9Version)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="$(EF9Version)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Specification.Tests" Version="$(EF9Version)" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(Configuration)' == 'Release EF10' Or '$(Configuration)' == 'Debug EF10' ">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="$(EF10Version)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="$(EF10Version)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Specification.Tests" Version="$(EF10Version)" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(Configuration)' == 'Release EF11' Or '$(Configuration)' == 'Debug EF11' ">
+  <ItemGroup>
+    <PackageReference Include="xunit.v3" Version="4.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="$(EF11Version)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="$(EF11Version)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Specification.Tests" Version="$(EF11Version)" />
-  </ItemGroup>
-
-  <!-- xUnit v3's TestFrameworkAttribute takes a Type, not names. -->
-  <ItemGroup Condition=" '$(Configuration)' != 'Release EF11' And '$(Configuration)' != 'Debug EF11' ">
-    <AssemblyAttribute Include="Xunit.TestFramework">
-      <_Parameter1>XUnit.Startup.Dispose.Hooks.TestFramework</_Parameter1>
-      <_Parameter2>XUnit.Startup.Dispose.Hooks</_Parameter2>
-    </AssemblyAttribute>
   </ItemGroup>
 </Project>

@@ -25,15 +25,14 @@ The MongoDB database provider for [Entity Framework Core](https://github.com/dot
 ## Commands
 
 ```bash
-# Build / test one EF version (replace EF10 with EF8, EF9 or EF11)
-dotnet build MongoDB.EFCoreProvider.sln -c "Debug EF10"
-dotnet test  MongoDB.EFCoreProvider.sln -c "Debug EF10" --no-build
-dotnet test  MongoDB.EFCoreProvider.sln -c "Debug EF10" --no-build --filter "FullyQualifiedName~ClassName"
+# Build / test (net11.0 only)
+dotnet build MongoDB.EFCoreProvider.sln -c Release
+dotnet test  tests/MongoDB.EntityFrameworkCore.UnitTests/MongoDB.EntityFrameworkCore.UnitTests.csproj -c Release
+dotnet test  tests/MongoDB.EntityFrameworkCore.FunctionalTests/MongoDB.EntityFrameworkCore.FunctionalTests.csproj -c Release --filter "FullyQualifiedName~ClassName"
 ```
 
-For all four versions in parallel, invoke the `/test-all` skill. EF11 needs the .NET 11 SDK.
-Every suite must also pass with `MONGODB_EF_QUERY_MODE=NativeOnly` (no driver-LINQ fallback): `/test-all --native` adds that
-pass, and CI runs it (GitHub Actions `native-only` job for EF10 and EF11, Evergreen for EF10). A test whose expected outcome
+This fork targets .NET 11 only; the .NET 11 SDK is required.
+Every suite must also pass with `MONGODB_EF_QUERY_MODE=NativeOnly` (no driver-LINQ fallback); CI runs that pass for EF11. A test whose expected outcome
 differs by mode branches on `MongoSpecTestHelpers.IsNativeOnly`.
 
 **EF11 SpecificationTests run through their own executable, not `dotnet test`.** They use xUnit v3 4.x (EF11's

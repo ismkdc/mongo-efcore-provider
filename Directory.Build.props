@@ -1,13 +1,10 @@
 <Project>
   <PropertyGroup>
-    <!-- EF version is selected by build Configuration (Debug/Release EF8|EF9|EF10), not by
-         TargetFramework, so each configuration restores a different set of package versions.
-         NuGet's restore outputs (project.assets.json, *.nuget.g.props/targets, etc.) are written
-         to $(MSBuildProjectExtensionsPath), which defaults to the *unqualified* obj\ directory -
-         shared across configurations - so building multiple configurations concurrently races on
-         those files. Give restore its own subdirectory per configuration; leave
-         BaseIntermediateOutputPath (compiled output) untouched, since it is already segregated by
-         configuration and default item excludes ("obj\**") key off it. -->
+    <!-- This fork targets net11.0 only. NuGet restore outputs (project.assets.json,
+         *.nuget.g.props/targets, etc.) are written to $(MSBuildProjectExtensionsPath), which defaults
+         to the *unqualified* obj\ directory; give each configuration its own subdirectory so parallel
+         Debug/Release builds do not race on those files. Leave BaseIntermediateOutputPath (compiled
+         output) untouched, since it is already segregated by configuration. -->
     <MSBuildProjectExtensionsPath>obj\$(Configuration)\</MSBuildProjectExtensionsPath>
   </PropertyGroup>
 </Project>

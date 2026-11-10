@@ -4,21 +4,17 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net11.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
     <AssemblyName>MongoDB.EntityFrameworkCore.Benchmarks</AssemblyName>
-    <Configurations>Debug EF10;Release EF10</Configurations>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)' == 'Release EF10'">
-    <Optimize>true</Optimize>
+    <DefineConstants>$(DefineConstants);EF11</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(EF10Version)" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(EF11Version)" />
   </ItemGroup>
 
   <ItemGroup>

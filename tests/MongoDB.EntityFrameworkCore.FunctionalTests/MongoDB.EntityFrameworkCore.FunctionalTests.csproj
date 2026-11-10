@@ -1,71 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configurations>Debug EF8;Release EF8;Debug EF9;Release EF9;Debug EF10;Release EF10;Debug EF11;Release EF11</Configurations>
+    <TargetFramework>net11.0</TargetFramework>
     <Platforms>AnyCPU</Platforms>
-  </PropertyGroup>
-  <PropertyGroup>
     <NoWarn>$(NoWarn);xUnit1051</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug EF8' ">
-    <DefineConstants>TRACE;DEBUG;EF8</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release EF8' ">
-    <DefineConstants>TRACE;RELEASE;EF8</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug EF9' ">
-    <DefineConstants>TRACE;DEBUG;EF9</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release EF9' ">
-    <DefineConstants>TRACE;RELEASE;EF9</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug EF10' ">
-    <DefineConstants>TRACE;DEBUG;EF10</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release EF10' ">
-    <DefineConstants>TRACE;RELEASE;EF10</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug EF11' ">
-    <TargetFramework>net11.0</TargetFramework>
-    <DefineConstants>TRACE;DEBUG;EF11</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release EF11' ">
-    <TargetFramework>net11.0</TargetFramework>
-    <DefineConstants>TRACE;RELEASE;EF11</DefineConstants>
+    <DefineConstants>$(DefineConstants);EF11</DefineConstants>
   </PropertyGroup>
 
   <Import Project="..\..\Versions.props" />
 
   <ItemGroup>
-    <PackageReference Include="xunit.v3" Version="3.2.2" />
+    <PackageReference Include="xunit.v3" Version="4.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\MongoDB.EntityFrameworkCore\MongoDB.EntityFrameworkCore.csproj" />
     <PackageReference Include="MongoDB.Driver.Encryption" Version="$(CSharpDriverVersion)" />
-    <Compile Remove="Design\Generated\**" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(Configuration)' == 'Release EF8' Or '$(Configuration)' == 'Debug EF8' ">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="$(EF8Version)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="$(EF8Version)" />
-    <Compile Include="Design\Generated\EF8\**" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(Configuration)' == 'Release EF9' Or '$(Configuration)' == 'Debug EF9' ">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="$(EF9Version)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="$(EF9Version)" />
-    <Compile Include="Design\Generated\EF9\**" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(Configuration)' == 'Release EF10' Or '$(Configuration)' == 'Debug EF10' ">
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="$(EF10Version)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="$(EF10Version)" />
-    <Compile Include="Design\Generated\EF10\**" />
-  </ItemGroup>
-
-  <ItemGroup Condition=" '$(Configuration)' == 'Release EF11' Or '$(Configuration)' == 'Debug EF11' ">
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="$(EF11Version)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="$(EF11Version)" />
+    <Compile Remove="Design\Generated\**" />
     <Compile Include="Design\Generated\EF11\**" />
   </ItemGroup>
 </Project>
