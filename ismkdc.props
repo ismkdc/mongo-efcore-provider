@@ -1,1 +1,26 @@
-<Project />
+<Project>
+  <PropertyGroup>
+    <PackageId>ismkdc.MongoDB.EntityFrameworkCore</PackageId>
+    <PackageVersion>11.0.0</PackageVersion>
+    <Authors>ismkdc</Authors>
+    <Company>ismkdc</Company>
+    <Description>Unofficial fork of MongoDB.EntityFrameworkCore adding EF Core 11 / .NET 11 support. Not affiliated with MongoDB, Inc.</Description>
+    <PackageTags>mongodb;efcore;entityframeworkcore;database;nosql;net11</PackageTags>
+    <RepositoryUrl>https://github.com/ismkdc/mongo-efcore-provider</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageReadmeFile>PACKAGE-README.md</PackageReadmeFile>
+    <PackageIcon>packageIcon.png</PackageIcon>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)LICENSE.md" Pack="true" PackagePath="\" />
+    <None Include="$(MSBuildThisFileDirectory)NOTICE.md" Pack="true" PackagePath="\" />
+    <None Include="$(MSBuildThisFileDirectory)THIRD-PARTY-NOTICES" Pack="true" PackagePath="\" />
+    <None Include="$(MSBuildThisFileDirectory)PACKAGE-README.md" Pack="true" PackagePath="\" />
+    <None Include="$(MSBuildThisFileDirectory)packageIcon.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+</Project>

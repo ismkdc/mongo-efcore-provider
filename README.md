@@ -1,5 +1,10 @@
 # MongoDB Entity Framework Core Provider
 
+> **Unofficial fork.** This repository adds EF Core 11 / .NET 11 support to the MongoDB EF Core
+> provider ahead of the official release. It is not affiliated with, endorsed by, or supported by
+> MongoDB, Inc. For the official provider see
+> [mongodb/mongo-efcore-provider](https://github.com/mongodb/mongo-efcore-provider).
+
 [![MongoDB.EntityFrameworkCore](https://img.shields.io/nuget/v/MongoDB.EntityFrameworkCore.svg)](https://www.nuget.org/packages/MongoDB.EntityFrameworkCore/)
 
 This fork supports **Entity Framework Core 11 on .NET 11** only. The official provider supports EF Core 8, 9 and 10.
