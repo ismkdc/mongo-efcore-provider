@@ -4,8 +4,11 @@
     <PackageVersion>11.0.0</PackageVersion>
     <Authors>ismkdc</Authors>
     <Company>ismkdc</Company>
+    <Copyright>Copyright © 2023-present MongoDB Inc.; unofficial fork by ismkdc</Copyright>
     <Description>Unofficial fork of MongoDB.EntityFrameworkCore adding EF Core 11 / .NET 11 support. Not affiliated with MongoDB, Inc.</Description>
     <PackageTags>mongodb;efcore;entityframeworkcore;database;nosql;net11</PackageTags>
+    <PackageProjectUrl>https://github.com/ismkdc/mongo-efcore-provider</PackageProjectUrl>
+    <PackageReleaseNotes>https://github.com/ismkdc/mongo-efcore-provider/releases/tag/v$(PackageVersion)</PackageReleaseNotes>
     <RepositoryUrl>https://github.com/ismkdc/mongo-efcore-provider</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
@@ -16,11 +19,10 @@
     <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
+  <!-- LICENSE.md and packageIcon.png are already packed by src/Directory.Build.props. -->
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)LICENSE.md" Pack="true" PackagePath="\" />
     <None Include="$(MSBuildThisFileDirectory)NOTICE.md" Pack="true" PackagePath="\" />
     <None Include="$(MSBuildThisFileDirectory)THIRD-PARTY-NOTICES" Pack="true" PackagePath="\" />
     <None Include="$(MSBuildThisFileDirectory)PACKAGE-README.md" Pack="true" PackagePath="\" />
-    <None Include="$(MSBuildThisFileDirectory)packageIcon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 </Project>

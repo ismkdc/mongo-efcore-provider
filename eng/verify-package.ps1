@@ -18,6 +18,8 @@ finally {
 
 $m = $nuspec.package.metadata
 $errors = @()
+$dupes = $entries | Group-Object | Where-Object { $_.Count -gt 1 }
+if ($dupes) { $errors += 'duplicate package entries: ' + (($dupes | ForEach-Object { $_.Name }) -join ', ') }
 if ($m.id -ne 'ismkdc.MongoDB.EntityFrameworkCore') { $errors += "PackageId '$($m.id)' != 'ismkdc.MongoDB.EntityFrameworkCore'" }
 if ($m.version -ne '11.0.0') { $errors += "Version '$($m.version)' != '11.0.0'" }
 if ($m.description -notmatch 'Unofficial') { $errors += 'Description must contain "Unofficial"' }
