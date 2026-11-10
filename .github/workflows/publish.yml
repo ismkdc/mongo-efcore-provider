@@ -1,0 +1,63 @@
+name: publish
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  TZ: UTC
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 11.0.100
+      - name: Verify tag matches package version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          version=$(sed -n 's:.*<PackageVersion>\(.*\)</PackageVersion>.*:\1:p' ismkdc.props)
+          test "$tag" = "$version" || { echo "tag $tag != PackageVersion $version"; exit 1; }
+      - name: Build and unit tests
+        run: |
+          dotnet build MongoDB.EFCoreProvider.sln -c Release --nologo
+          dotnet test tests/MongoDB.EntityFrameworkCore.UnitTests/MongoDB.EntityFrameworkCore.UnitTests.csproj -c Release --no-build --nologo
+      - name: Pack
+        run: dotnet pack src/MongoDB.EntityFrameworkCore/MongoDB.EntityFrameworkCore.csproj -c Release -o artifacts --no-build --nologo
+      - name: Verify package
+        shell: pwsh
+        run: ./eng/verify-package.ps1 -PackagePath (Get-ChildItem artifacts/*.nupkg | Select-Object -First 1).FullName
+      - uses: actions/upload-artifact@v7
+        with:
+          name: nupkg
+          path: artifacts/*.nupkg
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: nupkg
+          path: artifacts
+      - name: NuGet login (OIDC)
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: ismkdc
+      - name: Push to NuGet.org
+        run: >
+          dotnet nuget push "artifacts/*.nupkg"
+          --api-key "${{ steps.login.outputs.NUGET_API_KEY }}"
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate
