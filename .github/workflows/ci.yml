@@ -40,7 +40,8 @@ jobs:
       - name: Pack
         run: dotnet pack src/MongoDB.EntityFrameworkCore/MongoDB.EntityFrameworkCore.csproj -c Release -o artifacts --no-build --nologo
       - name: Verify package
-        run: pwsh -NoProfile -File eng/verify-package.ps1 -PackagePath (Get-ChildItem artifacts/*.nupkg | Select-Object -First 1).FullName
+        shell: pwsh
+        run: ./eng/verify-package.ps1 -PackagePath (Get-ChildItem artifacts/*.nupkg | Select-Object -First 1).FullName
       - uses: actions/upload-artifact@v7
         with:
           name: nupkg
