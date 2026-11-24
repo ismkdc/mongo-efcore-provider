@@ -6,12 +6,54 @@ In order to evolve the provider as we introduce new features, we will be using t
 
 ## Breaking changes in 11.0.1
 
-### MongoDB.Driver 3.14.1 redacts credentials in `MongoUrlBuilder.ToString()`
+This release moves the MongoDB.Driver dependency from 3.13.0 to 3.14.1, so the driver changes below apply.
+None of them change the provider's own public API.
 
-`MongoUrlBuilder.ToString()` now redacts the password (and other credentials) in the URI it returns. Code
-that logged or rebuilt a connection string from `MongoUrlBuilder.ToString()` and expected the raw
-credentials should use `ToMongoUrl().Url` instead. This is a driver change; EF Core connection-string
-configuration is unaffected.
+### MongoDB.Driver 3.14.1: `ToString()` redacts connection-string secrets
+
+`MongoUrl`, `MongoUrlBuilder` and `ConnectionString` now return a redacted URL from `ToString()`; usernames,
+passwords and other sensitive values become `<redacted>`. `MongoServerAddress.ToString()` and
+`MongoCredential.ToString()` return fixed type names, `MongoClientSettings.ToString()` omits server addresses
+and credentials, and connection-string parse/authentication exception messages no longer echo user-supplied
+values.
+
+Code that treated these results as a connection string, key or identifier must change:
+
+- `MongoUrl`: use `url.Url` instead of `url.ToString()`.
+- `MongoUrlBuilder`: use `builder.ToMongoUrl().Url` instead of `builder.ToString()`.
+- `ConnectionString`: there is no public way to get the raw value back; keep the original string you passed in.
+- `MongoServerAddress`: use `$"{address.Host}:{address.Port}"`.
+- `MongoCredential`: use `credential.Username` and `credential.Source`.
+
+EF Core connection-string configuration is unaffected.
+
+### MongoDB.Driver 3.14.1: SASL PLAIN credentials reject NUL bytes
+
+Creating or parsing a `PLAIN` credential whose username or password contains a NUL (`\0`) character now throws
+`ArgumentException` (CSHARP-6221 / CVE-2026-129937).
+
+### MongoDB.Driver 3.14.1: SRV host names are validated after normalization
+
+Hostnames used with `mongodb+srv://`, including hosts returned by SRV lookups and periodic re-resolution, are
+validated after normalization (CSHARP-6283 / CVE-2026-129938). Valid DNS names are unaffected.
+
+### MongoDB.Driver 3.14.0: type-discriminator allow-listing is stricter
+
+When allowed types are defined by assembly (`ObjectSerializerAllowedTypesConvention(params Assembly[])`),
+generic type arguments and array element types are now checked in addition to the generic definition. Anonymous
+type detection is also stricter. Documents whose discriminator resolves to a type that was previously allowed
+only through its generic definition, or to a type that merely resembles a compiler-generated anonymous type, may
+now fail to deserialize until that type is explicitly allowed (CSHARP-6160 / CVE-2026-126982,
+CSHARP-6169 / CVE-2026-126839).
+
+### MongoDB.Driver 3.14.0: preview string APIs removed
+
+`prefixPreview`, `suffixPreview` and `substringPreview` were removed (CSHARP-6137). Use the non-preview LINQ
+string methods instead.
+
+### MongoDB.Driver 3.14.0: filter field names colliding with path markers are rejected
+
+`@<current>` and `@<elem>` filter field names that collide with path markers are now rejected (CSHARP-6181).
 
 ## Breaking changes in 8.5.0 / 9.2.0 / 10.1.0
 

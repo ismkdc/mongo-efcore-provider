@@ -47,3 +47,29 @@ jobs:
           name: nupkg
           path: artifacts/*.nupkg
           if-no-files-found: error
+
+  native-only:
+    # Every suite must also pass with the native translator; this job is the release gate for that.
+    runs-on: ubuntu-latest
+    env:
+      MONGODB_EF_QUERY_MODE: NativeOnly
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 11.0.100
+      - name: Build
+        run: dotnet build MongoDB.EFCoreProvider.sln -c Release --nologo
+      - name: Unit tests (NativeOnly)
+        run: dotnet test tests/MongoDB.EntityFrameworkCore.UnitTests/MongoDB.EntityFrameworkCore.UnitTests.csproj -c Release --no-build --nologo
+      - name: Functional tests (NativeOnly, Atlas Search excluded)
+        run: >
+          dotnet test tests/MongoDB.EntityFrameworkCore.FunctionalTests/MongoDB.EntityFrameworkCore.FunctionalTests.csproj
+          -c Release --no-build --nologo
+          --filter "FullyQualifiedName!~SearchIndexTests&FullyQualifiedName!~SearchIndexExamplesTests"
+      - name: Specification smoke tests (NativeOnly)
+        run: |
+          exe="tests/MongoDB.EntityFrameworkCore.SpecificationTests/bin/Release/net11.0/MongoDB.EntityFrameworkCore.SpecificationTests"
+          chmod +x "$exe"
+          "$exe" -class "*NorthwindWhereQueryMongoTest" -culture invariant -noColor
+          "$exe" -class "*NorthwindGroupByQueryMongoTest" -culture invariant -noColor
