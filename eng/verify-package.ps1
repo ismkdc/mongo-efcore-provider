@@ -6,13 +6,16 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 # Expected values come from the build props so a version bump cannot drift from this check.
 $repoRoot = Split-Path -Parent $PSScriptRoot
-[xml]$versionsProps = Get-Content (Join-Path $repoRoot 'Versions.props')
-[xml]$packageProps = Get-Content (Join-Path $repoRoot 'ismkdc.props')
-$expectedEf = @($versionsProps.Project.PropertyGroup | ForEach-Object { $_.EF11Version }) | Where-Object { $_ } | Select-Object -First 1
-$expectedDriver = @($versionsProps.Project.PropertyGroup | ForEach-Object { $_.CSharpDriverVersion }) |
-    Where-Object { $_ -and $_ -notlike '$(*' } | Select-Object -First 1
+function Get-PropValue([string]$Path, [string]$Name) {
+    $text = Get-Content -Raw -Path $Path
+    $match = [regex]::Match($text, "<$Name[^>]*>([^<]+)</$Name>")
+    if (-not $match.Success) { throw "Could not read <$Name> from $Path" }
+    return $match.Groups[1].Value.Trim()
+}
+$expectedEf = Get-PropValue (Join-Path $repoRoot 'Versions.props') 'EF11Version'
+$expectedDriver = Get-PropValue (Join-Path $repoRoot 'Versions.props') 'CSharpDriverVersion'
 if ($env:DRIVER_VERSION) { $expectedDriver = $env:DRIVER_VERSION }
-$expectedVersion = @($packageProps.Project.PropertyGroup | ForEach-Object { $_.PackageVersion }) | Where-Object { $_ } | Select-Object -First 1
+$expectedVersion = Get-PropValue (Join-Path $repoRoot 'ismkdc.props') 'PackageVersion'
 
 $zip = [System.IO.Compression.ZipFile]::OpenRead((Resolve-Path $PackagePath))
 try {
