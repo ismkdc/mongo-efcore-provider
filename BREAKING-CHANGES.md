@@ -4,6 +4,15 @@ Please note that this provider **does not follow traditional semantic versioning
 
 In order to evolve the provider as we introduce new features, we will be using the minor version number for breaking and significant changes to our EF Core provider. Please bear this in mind when upgrading to newer versions of the MongoDB EF Core Provider and ensure you read the release notes and this document for the latest in breaking change information.
 
+## Breaking changes in 11.0.1
+
+### MongoDB.Driver 3.14.1 redacts credentials in `MongoUrlBuilder.ToString()`
+
+`MongoUrlBuilder.ToString()` now redacts the password (and other credentials) in the URI it returns. Code
+that logged or rebuilt a connection string from `MongoUrlBuilder.ToString()` and expected the raw
+credentials should use `ToMongoUrl().Url` instead. This is a driver change; EF Core connection-string
+configuration is unaffected.
+
 ## Breaking changes in 8.5.0 / 9.2.0 / 10.1.0
 
 ### Range, sort and aggregate queries over a numeric property stored as a string now fail on non-numeric stored values

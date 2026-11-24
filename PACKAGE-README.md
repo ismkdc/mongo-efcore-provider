@@ -10,10 +10,10 @@ package unless you specifically need EF Core 11 support.
 ## Install
 
 ```bash
-dotnet add package ismkdc.MongoDB.EntityFrameworkCore --version 11.0.0
+dotnet add package ismkdc.MongoDB.EntityFrameworkCore --version 11.0.1
 ```
 
-Targets `net11.0`; depends on `Microsoft.EntityFrameworkCore` 11.0.0 and `MongoDB.Driver` 3.13.0.
+Targets `net11.0`; depends on `Microsoft.EntityFrameworkCore` 11.0.0 and `MongoDB.Driver` 3.14.1.
 
 ## Usage
 

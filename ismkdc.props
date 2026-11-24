@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <PackageId>ismkdc.MongoDB.EntityFrameworkCore</PackageId>
-    <PackageVersion>11.0.0</PackageVersion>
+    <PackageVersion>11.0.1</PackageVersion>
     <Authors>ismkdc</Authors>
     <Company>ismkdc</Company>
     <Copyright>Copyright © 2023-present MongoDB Inc.; unofficial fork by ismkdc</Copyright>
