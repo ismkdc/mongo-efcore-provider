@@ -2,7 +2,7 @@
   <PropertyGroup>
     <EF11Version>11.0.0</EF11Version>
     <!-- DRIVER_VERSION env variable may be set by CI to test the provider against a newer MongoDB.Driver -->
-    <CSharpDriverVersion Condition="'$(DRIVER_VERSION)' == ''">3.13.0</CSharpDriverVersion>
+    <CSharpDriverVersion Condition="'$(DRIVER_VERSION)' == ''">3.14.1</CSharpDriverVersion>
     <CSharpDriverVersion Condition="'$(DRIVER_VERSION)' != ''">$(DRIVER_VERSION)</CSharpDriverVersion>
   </PropertyGroup>
 </Project>

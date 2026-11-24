@@ -396,31 +396,43 @@ internal sealed partial class MongoEFToLinqTranslatingExpressionVisitor : System
             serializerExpression);
     }
 
-    // The result-selector overload. .NET 11 added Join/GroupJoin overloads that take an IEqualityComparer as the fifth
-    // parameter instead, so the parameter count alone is no longer unique.
-    private static bool HasResultSelectorAsFifthParameter(MethodInfo method)
-        => method.GetParameters() is { Length: 5 } parameters
-           && parameters[4].ParameterType is { IsGenericType: true } fifth
-           && fifth.GetGenericTypeDefinition() == typeof(Expression<>);
+    private static readonly MethodInfo QueryableJoinMethod = GetQueryableJoinMethodDefinition();
 
-    private static readonly MethodInfo QueryableJoinMethod =
-        typeof(Queryable).GetMethods()
-            .Single(m => m.Name == nameof(Queryable.Join) && HasResultSelectorAsFifthParameter(m));
+    private static MethodInfo GetQueryableJoinMethodDefinition()
+        => ((MethodCallExpression)((Expression<Func<IQueryable<object>, IEnumerable<object>,
+                Expression<Func<object, object>>, Expression<Func<object, object>>,
+                Expression<Func<object, object, object>>, IQueryable<object>>>)
+            ((outer, inner, outerKey, innerKey, resultSelector)
+                => Queryable.Join(outer, inner, outerKey, innerKey, resultSelector))).Body)
+            .Method.GetGenericMethodDefinition();
 
-    private static readonly MethodInfo QueryableGroupJoinMethod =
-        typeof(Queryable).GetMethods()
-            .Single(m => m.Name == nameof(Queryable.GroupJoin) && HasResultSelectorAsFifthParameter(m));
+    private static readonly MethodInfo QueryableGroupJoinMethod = GetQueryableGroupJoinMethodDefinition();
 
-    private static readonly MethodInfo QueryableSelectManyMethod =
-        typeof(Queryable).GetMethods()
-            .Single(m => m.Name == nameof(Queryable.SelectMany)
-                         && m.GetParameters().Length == 3
-                         && m.GetParameters()[1].ParameterType.GetGenericArguments()[0]
-                             .GetGenericArguments().Length == 2);
+    private static MethodInfo GetQueryableGroupJoinMethodDefinition()
+        => ((MethodCallExpression)((Expression<Func<IQueryable<object>, IEnumerable<object>,
+                Expression<Func<object, object>>, Expression<Func<object, object>>,
+                Expression<Func<object, IEnumerable<object>, object>>, IQueryable<object>>>)
+            ((outer, inner, outerKey, innerKey, resultSelector)
+                => Queryable.GroupJoin(outer, inner, outerKey, innerKey, resultSelector))).Body)
+            .Method.GetGenericMethodDefinition();
 
-    private static readonly MethodInfo EnumerableDefaultIfEmptyMethod =
-        typeof(Enumerable).GetMethods()
-            .Single(m => m.Name == nameof(Enumerable.DefaultIfEmpty) && m.GetParameters().Length == 1);
+    private static readonly MethodInfo QueryableSelectManyMethod = GetQueryableSelectManyMethodDefinition();
+
+    private static MethodInfo GetQueryableSelectManyMethodDefinition()
+        => ((MethodCallExpression)((Expression<Func<IQueryable<object>,
+                Expression<Func<object, IEnumerable<object>>>,
+                Expression<Func<object, object, object>>,
+                IQueryable<object>>>)
+            ((source, collectionSelector, resultSelector) =>
+                Queryable.SelectMany(source, collectionSelector, resultSelector))).Body)
+            .Method.GetGenericMethodDefinition();
+
+    private static readonly MethodInfo EnumerableDefaultIfEmptyMethod = GetEnumerableDefaultIfEmptyMethodDefinition();
+
+    private static MethodInfo GetEnumerableDefaultIfEmptyMethodDefinition()
+        => ((MethodCallExpression)((Expression<Func<IEnumerable<object>, IEnumerable<object?>>>)
+            (source => source.DefaultIfEmpty())).Body)
+            .Method.GetGenericMethodDefinition();
 
     /// <summary>
     /// Builds the canonical driver-translatable left-outer join for the PROJECTED (non-shaped) path:
